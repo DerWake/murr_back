@@ -4,6 +4,13 @@ from django.db import models
 
 Murren = get_user_model()
 
+class MurrLike(models.Model):
+    """Счетчик лайков мурра"""
+    user = models.ForeignKey(Murren, on_delete=models.CASCADE, related_name='likes')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
 
 class MurrCard(models.Model):
     title = models.CharField(max_length=224)
@@ -11,6 +18,7 @@ class MurrCard(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(Murren, on_delete=models.CASCADE, related_name='murr_cards')
+    likes = GenericRelation(MurrLike)
 
     def __str__(self):
         return self.title
@@ -36,6 +44,10 @@ class MurrCard(models.Model):
                 output_size = (320, 320)
                 img.thumbnail(output_size)
                 img.save(self.cover.path, 'jpeg')
+
+     @property
+     def total_likes(self):
+        return self.likes.count()
 
 
 class EditorImageForMurrCard(models.Model):
