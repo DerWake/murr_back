@@ -9,7 +9,7 @@ class MurrCardSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = MurrCard
-        fields = ('owner', 'title', 'cover', 'content', 'id', 'owner_name', 'owner_url')
+        fields = ('owner', 'title', 'cover', 'content', 'id', 'owner_name', 'owner_url', 'total_likes')
         read_only_fields = ('owner_url', )
 
 

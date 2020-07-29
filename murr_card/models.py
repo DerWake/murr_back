@@ -1,8 +1,19 @@
 from PIL import Image
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 Murren = get_user_model()
+
+
+class MurrLike(models.Model):
+    """Счетчик лайков мурра"""
+    user = models.ForeignKey(Murren, on_delete=models.CASCADE, related_name='likes')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
 
 
 class MurrCard(models.Model):
@@ -36,6 +47,10 @@ class MurrCard(models.Model):
                 output_size = (320, 320)
                 img.thumbnail(output_size)
                 img.save(self.cover.path, 'jpeg')
+
+    @property
+    def total_likes(self):
+        return self.likes.count()
 
 
 class EditorImageForMurrCard(models.Model):
